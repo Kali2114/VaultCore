@@ -1,21 +1,20 @@
-import java.util.UUID;
+package models;
 
+import exceptions.InvalidAmountException;
+import exceptions.InsufficientFundsException;
+import utils.IdGenerator;
 
-abstract class BankAccount{
+public abstract class BankAccount{
     private String account_number;
     private User owner;
     private double balance;
     private boolean is_active;
 
     public BankAccount(User owner){
-        this.account_number = generate_account_number();
+        this.account_number = IdGenerator.generate_id();
         this.owner = owner;
         this.balance = 0;
         this.is_active = true;
-    }
-
-    private String generate_account_number(){
-        return UUID.randomUUID().toString().replace("-", "");
     }
 
     public String get_account_number(){
@@ -35,17 +34,18 @@ abstract class BankAccount{
     }
 
     public void deposit(double value){
+        if (value <= 0){
+            throw new InvalidAmountException("Amount must be greater than zero");
+        }
         this.balance += value;
     }
 
     public void withdraw(double value){
-        if (value < 0){
-            System.out.println("Wrong value");
-            return;
+        if (value <= 0){
+            throw new InvalidAmountException("Amount must be greater than zero");
         }
         else if (value > this.balance){
-            System.out.println("Not enough money");
-            return;
+            throw new InsufficientFundsException("Not enough funds.");
         }
         this.balance -= value;
     }
