@@ -18,12 +18,19 @@ public class SavingAccount extends BankAccount implements InterestBearing, Trans
     @Override
     public void apply_interest(){
         double interest = (get_balance() * this.interest_rate / 100);
-        deposit(interest);
+        if (interest > 0) {
+            deposit(interest);
+        }
     }
 
     @Override
     public void transfer(BankAccount target_account, double amount){
         withdraw(amount);
         target_account.deposit(amount);
+    }
+
+    @Override
+    public void monthly_update(){
+        apply_interest();
     }
 }

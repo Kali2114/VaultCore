@@ -50,5 +50,7 @@ public abstract class BankAccount{
         this.balance -= value;
     }
 
+    public abstract void monthly_update();
+
 }
 
