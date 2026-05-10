@@ -50,6 +50,11 @@ public abstract class BankAccount{
         this.balance -= value;
     }
 
+    public void transfer(BankAccount target_account, double amount){
+        withdraw(amount);
+        target_account.deposit(amount);
+    }
+
     public abstract void monthly_update();
 
 }

@@ -1,9 +1,8 @@
 package models;
 
 import contracts.InterestBearing;
-import contracts.Transferable;
 
-public class SavingAccount extends BankAccount implements InterestBearing, Transferable{
+public class SavingAccount extends BankAccount implements InterestBearing{
     private double interest_rate;
 
     public SavingAccount(User owner, double interest_rate){
@@ -21,12 +20,6 @@ public class SavingAccount extends BankAccount implements InterestBearing, Trans
         if (interest > 0) {
             deposit(interest);
         }
-    }
-
-    @Override
-    public void transfer(BankAccount target_account, double amount){
-        withdraw(amount);
-        target_account.deposit(amount);
     }
 
     @Override
