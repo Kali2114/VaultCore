@@ -11,15 +11,13 @@ public class User{
     private String last_name;
     private String email;
     private List<BankAccount> accounts;
-    private int pin;
 
-    public User(String first_name, String last_name, String email, int pin){
+    public User(String first_name, String last_name, String email){
         this.id = IdGenerator.generate_id();
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
         this.accounts = new ArrayList<>();
-        this.pin = pin;
     }
 
     public String get_id(){
@@ -41,8 +39,6 @@ public class User{
     public List<BankAccount> get_accounts(){
         return this.accounts;
     }
-
-    public int get_pin() { return this.pin; }
 
     public void add_account(BankAccount account){
         this.accounts.add(account);
