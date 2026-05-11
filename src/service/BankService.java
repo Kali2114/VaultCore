@@ -53,6 +53,15 @@ public class BankService {
         account.get_owner().add_account(account);
     }
 
+    public BankAccount find_account_by_number(String account_number){
+        for (BankAccount account : this.accounts){
+            if (account.get_account_number().equals(account_number)){
+                return account;
+            }
+        }
+        return null;
+    }
+
 
     public void deposit(BankAccount account, double amount){
         account.deposit(amount);

@@ -11,7 +11,7 @@ public abstract class BankAccount{
     private boolean is_active;
 
     public BankAccount(User owner){
-        this.account_number = IdGenerator.generate_id();
+        this.account_number = IdGenerator.generate_account_id();
         this.owner = owner;
         this.balance = 0;
         this.is_active = true;
