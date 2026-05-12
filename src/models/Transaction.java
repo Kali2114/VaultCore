@@ -28,6 +28,19 @@ public class Transaction {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id='" + transaction_id + '\'' +
+                ", type=" + type +
+                ", source='" + source_account_number + '\'' +
+                ", target='" + target_account_number + '\'' +
+                ", amount=" + amount +
+                ", created_at=" + created_at +
+                ", description='" + description + '\'' +
+                '}';
+    }
+
     public String get_transaction_id(){
         return this.transaction_id;
     }
