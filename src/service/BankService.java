@@ -3,6 +3,7 @@ package service;
 import java.util.List;
 import java.util.ArrayList;
 
+import exceptions.AccountNotFoundException;
 import models.*;
 
 public class BankService {
@@ -24,7 +25,7 @@ public class BankService {
         return this.accounts;
     }
 
-    public List<Transaction> get_transaction(){
+    public List<Transaction> get_transactions(){
         return this.transactions;
     }
 
@@ -59,11 +60,11 @@ public class BankService {
                 return account;
             }
         }
-        return null;
+        throw new AccountNotFoundException("Account not found");
     }
 
 
-    public void deposit(BankAccount account, double amount){
+    private void deposit(BankAccount account, double amount){
         account.deposit(amount);
         Transaction transaction = new Transaction(
                 TransactionType.DEPOSIT,
@@ -75,7 +76,7 @@ public class BankService {
         transactions.add(transaction);
     }
 
-    public void withdraw(BankAccount account, double amount){
+    private void withdraw(BankAccount account, double amount){
         account.withdraw(amount);
         Transaction transaction = new Transaction(
                 TransactionType.WITHDRAW,
@@ -87,7 +88,7 @@ public class BankService {
         transactions.add(transaction);
     }
 
-    public void transfer(BankAccount source_account, BankAccount target_account, double amount){
+    private void transfer(BankAccount source_account, BankAccount target_account, double amount){
         source_account.transfer(target_account, amount);
         Transaction transaction = new Transaction(
                 TransactionType.TRANSFER,
@@ -103,5 +104,21 @@ public class BankService {
         for (BankAccount account : this.accounts){
             account.monthly_update();
         }
+    }
+
+    public void deposit_by_account_number(String account_number, double amount){
+        BankAccount account = find_account_by_number(account_number);
+        deposit(account, amount);
+    }
+
+    public void withdraw_by_account_number(String account_number, double amount){
+        BankAccount account = find_account_by_number(account_number);
+        withdraw(account, amount);
+    }
+
+    public void transfer_by_account_number(String source_number, String target_number, double amount){
+        BankAccount source_account = find_account_by_number(source_number);
+        BankAccount target_account = find_account_by_number(target_number);
+        transfer(source_account, target_account, amount);
     }
 }
