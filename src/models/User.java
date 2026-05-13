@@ -2,10 +2,11 @@ package models;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.io.Serializable;
 
 import utils.IdGenerator;
 
-public class User{
+public class User implements Serializable{
     private String id;
     private String first_name;
     private String last_name;

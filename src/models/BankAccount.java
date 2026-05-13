@@ -1,10 +1,12 @@
 package models;
 
+import java.io.Serializable;
+
 import exceptions.InvalidAmountException;
 import exceptions.InsufficientFundsException;
 import utils.IdGenerator;
 
-public abstract class BankAccount{
+public abstract class BankAccount implements Serializable{
     private String account_number;
     private User owner;
     private double balance;

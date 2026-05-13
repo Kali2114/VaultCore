@@ -1,9 +1,10 @@
 package models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import utils.IdGenerator;
 
-public class Transaction {
+public class Transaction implements Serializable{
     private String transaction_id;
     private TransactionType type;
     private String source_account_number;
