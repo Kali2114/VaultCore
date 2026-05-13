@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.io.Serializable;
 
 import utils.IdGenerator;
+import exceptions.InvalidEmailException;
 
 public class User implements Serializable{
     private String id;
@@ -17,6 +18,9 @@ public class User implements Serializable{
         this.id = IdGenerator.generate_id();
         this.first_name = first_name;
         this.last_name = last_name;
+        if (!is_valid_email(email)) {
+            throw new InvalidEmailException("Invalid email address.");
+        }
         this.email = email;
         this.accounts = new ArrayList<>();
     }
@@ -24,6 +28,12 @@ public class User implements Serializable{
     @Override
     public String toString() {
         return this.first_name + " " + this.last_name;
+    }
+
+    private boolean is_valid_email(String email) {
+        return email != null
+                && email.contains("@")
+                && email.contains(".");
     }
 
     public String get_id(){

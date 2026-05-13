@@ -2,21 +2,24 @@ package gui;
 
 import models.*;
 import service.BankService;
+import storage.FileStorage;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
-    private final BankService bankService;
+    private final BankService bank_service;
+    private final FileStorage storage;
 
-    private final DefaultListModel<String> usersListModel = new DefaultListModel<>();
-    private final DefaultListModel<String> accountsListModel = new DefaultListModel<>();
-    private final DefaultListModel<String> transactionsListModel = new DefaultListModel<>();
+    private final DefaultListModel<String> users_list_model = new DefaultListModel<>();
+    private final DefaultListModel<String> accounts_list_model = new DefaultListModel<>();
+    private final DefaultListModel<String> transactions_list_model = new DefaultListModel<>();
 
-    private final JComboBox<User> userComboBox = new JComboBox<>();
+    private final JComboBox<User> user_combo_box = new JComboBox<>();
 
-    public MainFrame(BankService bankService) {
-        this.bankService = bankService;
+    public MainFrame(BankService bank_service, FileStorage storage) {
+        this.bank_service = bank_service;
+        this.storage = storage;
 
         setTitle("VaultCore");
         setSize(900, 600);
@@ -25,132 +28,127 @@ public class MainFrame extends JFrame {
 
         JTabbedPane tabs = new JTabbedPane();
 
-        tabs.addTab("Clients", createClientsPanel());
-        tabs.addTab("Accounts", createAccountsPanel());
-        tabs.addTab("Operations", createOperationsPanel());
-        tabs.addTab("Transactions", createTransactionsPanel());
+        tabs.addTab("Clients", create_clients_panel());
+        tabs.addTab("Accounts", create_accounts_panel());
+        tabs.addTab("Operations", create_operations_panel());
+        tabs.addTab("Transactions", create_transactions_panel());
 
         add(tabs);
+
+        refresh_users();
+        refresh_accounts();
+        refresh_transactions();
 
         setVisible(true);
     }
 
-    private JPanel createClientsPanel() {
+    private JPanel create_clients_panel() {
         JPanel panel = new JPanel(new BorderLayout());
+        JPanel form_panel = new JPanel();
 
-        JPanel formPanel = new JPanel();
+        JTextField first_name_field = new JTextField(12);
+        JTextField last_name_field = new JTextField(12);
+        JTextField email_field = new JTextField(18);
+        JButton add_user_button = new JButton("Add user");
 
-        JTextField firstNameField = new JTextField(12);
-        JTextField lastNameField = new JTextField(12);
-        JTextField emailField = new JTextField(18);
-        JButton addUserButton = new JButton("Add user");
+        form_panel.add(new JLabel("First name:"));
+        form_panel.add(first_name_field);
+        form_panel.add(new JLabel("Last name:"));
+        form_panel.add(last_name_field);
+        form_panel.add(new JLabel("Email:"));
+        form_panel.add(email_field);
+        form_panel.add(add_user_button);
 
-        formPanel.add(new JLabel("First name:"));
-        formPanel.add(firstNameField);
-        formPanel.add(new JLabel("Last name:"));
-        formPanel.add(lastNameField);
-        formPanel.add(new JLabel("Email:"));
-        formPanel.add(emailField);
-        formPanel.add(addUserButton);
+        JList<String> users_list = new JList<>(users_list_model);
 
-        JList<String> usersList = new JList<>(usersListModel);
+        add_user_button.addActionListener(event -> {
+            try {
+                String first_name = first_name_field.getText();
+                String last_name = last_name_field.getText();
+                String email = email_field.getText();
 
-        addUserButton.addActionListener(event -> {
-            String firstName = firstNameField.getText();
-            String lastName = lastNameField.getText();
-            String email = emailField.getText();
+                if (first_name.isBlank() || last_name.isBlank() || email.isBlank()) {
+                    JOptionPane.showMessageDialog(this, "Fill all user fields.");
+                    return;
+                }
 
-            if (firstName.isBlank() || lastName.isBlank() || email.isBlank()) {
-                JOptionPane.showMessageDialog(this, "Fill all user fields.");
-                return;
+                User user = bank_service.create_user(first_name, last_name, email);
+                bank_service.add_user(user);
+
+                refresh_users();
+                save_data();
+
+                first_name_field.setText("");
+                last_name_field.setText("");
+                email_field.setText("");
+
+                JOptionPane.showMessageDialog(this, "User added.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
             }
-
-            User user = bankService.create_user(firstName, lastName, email);
-            bankService.add_user(user);
-
-            userComboBox.addItem(user);
-            usersListModel.addElement(user.get_first_name() + " " + user.get_last_name() + " | " + user.get_email());
-
-            firstNameField.setText("");
-            lastNameField.setText("");
-            emailField.setText("");
-
-            JOptionPane.showMessageDialog(this, "User added.");
         });
 
-        panel.add(formPanel, BorderLayout.NORTH);
-        panel.add(new JScrollPane(usersList), BorderLayout.CENTER);
+        panel.add(form_panel, BorderLayout.NORTH);
+        panel.add(new JScrollPane(users_list), BorderLayout.CENTER);
 
         return panel;
     }
 
-    private JPanel createAccountsPanel() {
+    private JPanel create_accounts_panel() {
         JPanel panel = new JPanel(new BorderLayout());
+        JPanel form_panel = new JPanel();
 
-        JPanel formPanel = new JPanel();
-
-        JComboBox<String> accountTypeBox = new JComboBox<>(new String[]{
+        JComboBox<String> account_type_box = new JComboBox<>(new String[]{
                 "Checking",
                 "Saving",
                 "Business"
         });
 
-        JTextField interestRateField = new JTextField("3.0", 6);
-        interestRateField.setEnabled("Saving".equals(accountTypeBox.getSelectedItem()));
+        JTextField interest_rate_field = new JTextField("3.0", 6);
+        interest_rate_field.setEnabled("Saving".equals(account_type_box.getSelectedItem()));
 
-        accountTypeBox.addActionListener(event -> {
-            boolean isSaving = "Saving".equals(accountTypeBox.getSelectedItem());
-            interestRateField.setEnabled(isSaving);
+        account_type_box.addActionListener(event -> {
+            boolean is_saving = "Saving".equals(account_type_box.getSelectedItem());
+            interest_rate_field.setEnabled(is_saving);
         });
-        JButton createAccountButton = new JButton("Create account");
 
-        formPanel.add(new JLabel("User:"));
-        formPanel.add(userComboBox);
+        JButton create_account_button = new JButton("Create account");
 
-        formPanel.add(new JLabel("Type:"));
-        formPanel.add(accountTypeBox);
+        form_panel.add(new JLabel("User:"));
+        form_panel.add(user_combo_box);
+        form_panel.add(new JLabel("Type:"));
+        form_panel.add(account_type_box);
+        form_panel.add(new JLabel("Interest rate:"));
+        form_panel.add(interest_rate_field);
+        form_panel.add(create_account_button);
 
-        formPanel.add(new JLabel("Interest rate:"));
-        formPanel.add(interestRateField);
+        JList<String> accounts_list = new JList<>(accounts_list_model);
 
-        formPanel.add(createAccountButton);
-
-        JList<String> accountsList = new JList<>(accountsListModel);
-
-        createAccountButton.addActionListener(event -> {
+        create_account_button.addActionListener(event -> {
             try {
-                User user = (User) userComboBox.getSelectedItem();
+                User user = (User) user_combo_box.getSelectedItem();
 
                 if (user == null) {
                     JOptionPane.showMessageDialog(this, "Create user first.");
                     return;
                 }
 
-                String type = (String) accountTypeBox.getSelectedItem();
+                String type = (String) account_type_box.getSelectedItem();
                 BankAccount account;
 
                 if ("Saving".equals(type)) {
-                    double interestRate = Double.parseDouble(interestRateField.getText());
-                    account = bankService.create_saving_account(user, interestRate);
+                    double interest_rate = Double.parseDouble(interest_rate_field.getText());
+                    account = bank_service.create_saving_account(user, interest_rate);
                 } else if ("Business".equals(type)) {
-                    account = bankService.create_business_account(user);
+                    account = bank_service.create_business_account(user);
                 } else {
-                    account = bankService.create_checking_account(user);
+                    account = bank_service.create_checking_account(user);
                 }
 
-                bankService.add_account(account);
+                bank_service.add_account(account);
 
-                accountsListModel.addElement(
-                        account.get_account_number()
-                                + " | "
-                                + type
-                                + " | owner: "
-                                + user.get_first_name()
-                                + " "
-                                + user.get_last_name()
-                                + " | balance: "
-                                + account.get_balance()
-                );
+                refresh_accounts();
+                save_data();
 
                 JOptionPane.showMessageDialog(this, "Account created: " + account.get_account_number());
 
@@ -159,64 +157,65 @@ public class MainFrame extends JFrame {
             }
         });
 
-        panel.add(formPanel, BorderLayout.NORTH);
-        panel.add(new JScrollPane(accountsList), BorderLayout.CENTER);
+        panel.add(form_panel, BorderLayout.NORTH);
+        panel.add(new JScrollPane(accounts_list), BorderLayout.CENTER);
 
         return panel;
     }
 
-    private JPanel createOperationsPanel() {
+    private JPanel create_operations_panel() {
         JPanel panel = new JPanel(new GridLayout(4, 1));
 
-        JPanel depositPanel = new JPanel();
-        JTextField depositAccountField = new JTextField(12);
-        JTextField depositAmountField = new JTextField(8);
-        JButton depositButton = new JButton("Deposit");
+        JPanel deposit_panel = new JPanel();
+        JTextField deposit_account_field = new JTextField(12);
+        JTextField deposit_amount_field = new JTextField(8);
+        JButton deposit_button = new JButton("Deposit");
 
-        depositPanel.add(new JLabel("Account:"));
-        depositPanel.add(depositAccountField);
-        depositPanel.add(new JLabel("Amount:"));
-        depositPanel.add(depositAmountField);
-        depositPanel.add(depositButton);
+        deposit_panel.add(new JLabel("Account:"));
+        deposit_panel.add(deposit_account_field);
+        deposit_panel.add(new JLabel("Amount:"));
+        deposit_panel.add(deposit_amount_field);
+        deposit_panel.add(deposit_button);
 
-        JPanel withdrawPanel = new JPanel();
-        JTextField withdrawAccountField = new JTextField(12);
-        JTextField withdrawAmountField = new JTextField(8);
-        JButton withdrawButton = new JButton("Withdraw");
+        JPanel withdraw_panel = new JPanel();
+        JTextField withdraw_account_field = new JTextField(12);
+        JTextField withdraw_amount_field = new JTextField(8);
+        JButton withdraw_button = new JButton("Withdraw");
 
-        withdrawPanel.add(new JLabel("Account:"));
-        withdrawPanel.add(withdrawAccountField);
-        withdrawPanel.add(new JLabel("Amount:"));
-        withdrawPanel.add(withdrawAmountField);
-        withdrawPanel.add(withdrawButton);
+        withdraw_panel.add(new JLabel("Account:"));
+        withdraw_panel.add(withdraw_account_field);
+        withdraw_panel.add(new JLabel("Amount:"));
+        withdraw_panel.add(withdraw_amount_field);
+        withdraw_panel.add(withdraw_button);
 
-        JPanel transferPanel = new JPanel();
-        JTextField sourceAccountField = new JTextField(12);
-        JTextField targetAccountField = new JTextField(12);
-        JTextField transferAmountField = new JTextField(8);
-        JButton transferButton = new JButton("Transfer");
+        JPanel transfer_panel = new JPanel();
+        JTextField source_account_field = new JTextField(12);
+        JTextField target_account_field = new JTextField(12);
+        JTextField transfer_amount_field = new JTextField(8);
+        JButton transfer_button = new JButton("Transfer");
 
-        transferPanel.add(new JLabel("From:"));
-        transferPanel.add(sourceAccountField);
-        transferPanel.add(new JLabel("To:"));
-        transferPanel.add(targetAccountField);
-        transferPanel.add(new JLabel("Amount:"));
-        transferPanel.add(transferAmountField);
-        transferPanel.add(transferButton);
+        transfer_panel.add(new JLabel("From:"));
+        transfer_panel.add(source_account_field);
+        transfer_panel.add(new JLabel("To:"));
+        transfer_panel.add(target_account_field);
+        transfer_panel.add(new JLabel("Amount:"));
+        transfer_panel.add(transfer_amount_field);
+        transfer_panel.add(transfer_button);
 
-        JPanel monthlyPanel = new JPanel();
-        JButton monthlyUpdateButton = new JButton("Apply monthly update");
-        monthlyPanel.add(monthlyUpdateButton);
+        JPanel monthly_panel = new JPanel();
+        JButton monthly_update_button = new JButton("Apply monthly update");
+        monthly_panel.add(monthly_update_button);
 
-        depositButton.addActionListener(event -> {
+        deposit_button.addActionListener(event -> {
             try {
-                String accountNumber = depositAccountField.getText();
-                double amount = Double.parseDouble(depositAmountField.getText());
+                String account_number = deposit_account_field.getText();
+                double amount = Double.parseDouble(deposit_amount_field.getText());
 
-                bankService.deposit_by_account_number(accountNumber, amount);
+                bank_service.deposit_by_account_number(account_number, amount);
 
-                refreshTransactions();
-                refreshAccounts();
+                refresh_accounts();
+                refresh_transactions();
+                save_data();
 
                 JOptionPane.showMessageDialog(this, "Deposit completed.");
             } catch (Exception e) {
@@ -224,15 +223,16 @@ public class MainFrame extends JFrame {
             }
         });
 
-        withdrawButton.addActionListener(event -> {
+        withdraw_button.addActionListener(event -> {
             try {
-                String accountNumber = withdrawAccountField.getText();
-                double amount = Double.parseDouble(withdrawAmountField.getText());
+                String account_number = withdraw_account_field.getText();
+                double amount = Double.parseDouble(withdraw_amount_field.getText());
 
-                bankService.withdraw_by_account_number(accountNumber, amount);
+                bank_service.withdraw_by_account_number(account_number, amount);
 
-                refreshTransactions();
-                refreshAccounts();
+                refresh_accounts();
+                refresh_transactions();
+                save_data();
 
                 JOptionPane.showMessageDialog(this, "Withdraw completed.");
             } catch (Exception e) {
@@ -240,16 +240,17 @@ public class MainFrame extends JFrame {
             }
         });
 
-        transferButton.addActionListener(event -> {
+        transfer_button.addActionListener(event -> {
             try {
-                String sourceNumber = sourceAccountField.getText();
-                String targetNumber = targetAccountField.getText();
-                double amount = Double.parseDouble(transferAmountField.getText());
+                String source_number = source_account_field.getText();
+                String target_number = target_account_field.getText();
+                double amount = Double.parseDouble(transfer_amount_field.getText());
 
-                bankService.transfer_by_account_number(sourceNumber, targetNumber, amount);
+                bank_service.transfer_by_account_number(source_number, target_number, amount);
 
-                refreshTransactions();
-                refreshAccounts();
+                refresh_accounts();
+                refresh_transactions();
+                save_data();
 
                 JOptionPane.showMessageDialog(this, "Transfer completed.");
             } catch (Exception e) {
@@ -257,12 +258,13 @@ public class MainFrame extends JFrame {
             }
         });
 
-        monthlyUpdateButton.addActionListener(event -> {
+        monthly_update_button.addActionListener(event -> {
             try {
-                bankService.apply_monthly_update();
+                bank_service.apply_monthly_update();
 
-                refreshTransactions();
-                refreshAccounts();
+                refresh_accounts();
+                refresh_transactions();
+                save_data();
 
                 JOptionPane.showMessageDialog(this, "Monthly update applied.");
             } catch (Exception e) {
@@ -270,41 +272,45 @@ public class MainFrame extends JFrame {
             }
         });
 
-        panel.add(depositPanel);
-        panel.add(withdrawPanel);
-        panel.add(transferPanel);
-        panel.add(monthlyPanel);
+        panel.add(deposit_panel);
+        panel.add(withdraw_panel);
+        panel.add(transfer_panel);
+        panel.add(monthly_panel);
 
         return panel;
     }
 
-    private JPanel createTransactionsPanel() {
+    private JPanel create_transactions_panel() {
         JPanel panel = new JPanel(new BorderLayout());
 
-        JList<String> transactionsList = new JList<>(transactionsListModel);
-        JButton refreshButton = new JButton("Refresh transactions");
+        JList<String> transactions_list = new JList<>(transactions_list_model);
+        JButton refresh_button = new JButton("Refresh transactions");
 
-        refreshButton.addActionListener(event -> refreshTransactions());
+        refresh_button.addActionListener(event -> refresh_transactions());
 
-        panel.add(refreshButton, BorderLayout.NORTH);
-        panel.add(new JScrollPane(transactionsList), BorderLayout.CENTER);
+        panel.add(refresh_button, BorderLayout.NORTH);
+        panel.add(new JScrollPane(transactions_list), BorderLayout.CENTER);
 
         return panel;
     }
 
-    private void refreshTransactions() {
-        transactionsListModel.clear();
+    private void refresh_users() {
+        users_list_model.clear();
+        user_combo_box.removeAllItems();
 
-        for (Transaction transaction : bankService.get_transactions()) {
-            transactionsListModel.addElement(transaction.toString());
+        for (User user : bank_service.get_users()) {
+            users_list_model.addElement(
+                    user.get_first_name() + " " + user.get_last_name() + " | " + user.get_email()
+            );
+            user_combo_box.addItem(user);
         }
     }
 
-    private void refreshAccounts() {
-        accountsListModel.clear();
+    private void refresh_accounts() {
+        accounts_list_model.clear();
 
-        for (BankAccount account : bankService.get_accounts()) {
-            accountsListModel.addElement(
+        for (BankAccount account : bank_service.get_accounts()) {
+            accounts_list_model.addElement(
                     account.get_account_number()
                             + " | owner: "
                             + account.get_owner().get_first_name()
@@ -314,5 +320,17 @@ public class MainFrame extends JFrame {
                             + account.get_balance()
             );
         }
+    }
+
+    private void refresh_transactions() {
+        transactions_list_model.clear();
+
+        for (Transaction transaction : bank_service.get_transactions()) {
+            transactions_list_model.addElement(transaction.toString());
+        }
+    }
+
+    private void save_data() {
+        storage.save(bank_service.export_data());
     }
 }
