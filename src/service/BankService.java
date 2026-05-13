@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import exceptions.AccountNotFoundException;
 import models.*;
+import storage.BankData;
 
 public class BankService {
     private List<User> users;
@@ -120,5 +121,15 @@ public class BankService {
         BankAccount source_account = find_account_by_number(source_number);
         BankAccount target_account = find_account_by_number(target_number);
         transfer(source_account, target_account, amount);
+    }
+
+    public BankData export_data(){
+        return new BankData(this.users, this.accounts, this.transactions);
+    }
+
+    public void import_data(BankData data){
+        this.users = data.get_users();
+        this.accounts = data.get_accounts();
+        this.transactions = data.get_transactions();
     }
 }
