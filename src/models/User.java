@@ -21,6 +21,11 @@ public class User implements Serializable{
         this.accounts = new ArrayList<>();
     }
 
+    @Override
+    public String toString() {
+        return this.first_name + " " + this.last_name;
+    }
+
     public String get_id(){
         return this.id;
     }
