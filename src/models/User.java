@@ -7,7 +7,7 @@ import java.io.Serializable;
 import utils.IdGenerator;
 import exceptions.InvalidEmailException;
 
-public class User implements Serializable{
+public class User implements Serializable {
     private String id;
     private String first_name;
     private String last_name;

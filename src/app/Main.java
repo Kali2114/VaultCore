@@ -1,6 +1,6 @@
 package app;
 
-import gui.MainFrame;
+import gui.LoginFrame;
 import service.BankService;
 import storage.BankData;
 import storage.FileStorage;
@@ -16,6 +16,6 @@ public class Main {
             bankService.import_data(data);
         }
 
-        new MainFrame(bankService, storage);
+        new LoginFrame(bankService, storage);
     }
 }

@@ -6,6 +6,7 @@ import storage.FileStorage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.math.BigDecimal;
 
 public class MainFrame extends JFrame {
     private final BankService bank_service;
@@ -137,7 +138,7 @@ public class MainFrame extends JFrame {
                 BankAccount account;
 
                 if ("Saving".equals(type)) {
-                    double interest_rate = Double.parseDouble(interest_rate_field.getText());
+                    BigDecimal interest_rate = new BigDecimal(interest_rate_field.getText());
                     account = bank_service.create_saving_account(user, interest_rate);
                 } else if ("Business".equals(type)) {
                     account = bank_service.create_business_account(user);
@@ -209,7 +210,7 @@ public class MainFrame extends JFrame {
         deposit_button.addActionListener(event -> {
             try {
                 String account_number = deposit_account_field.getText();
-                double amount = Double.parseDouble(deposit_amount_field.getText());
+                BigDecimal amount = new BigDecimal(deposit_amount_field.getText());
 
                 bank_service.deposit_by_account_number(account_number, amount);
 
@@ -218,6 +219,8 @@ public class MainFrame extends JFrame {
                 save_data();
 
                 JOptionPane.showMessageDialog(this, "Deposit completed.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Amount must be a number.");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage());
             }
@@ -226,7 +229,7 @@ public class MainFrame extends JFrame {
         withdraw_button.addActionListener(event -> {
             try {
                 String account_number = withdraw_account_field.getText();
-                double amount = Double.parseDouble(withdraw_amount_field.getText());
+                BigDecimal amount = new BigDecimal(withdraw_amount_field.getText());
 
                 bank_service.withdraw_by_account_number(account_number, amount);
 
@@ -235,6 +238,8 @@ public class MainFrame extends JFrame {
                 save_data();
 
                 JOptionPane.showMessageDialog(this, "Withdraw completed.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Amount must be a number.");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage());
             }
@@ -244,7 +249,7 @@ public class MainFrame extends JFrame {
             try {
                 String source_number = source_account_field.getText();
                 String target_number = target_account_field.getText();
-                double amount = Double.parseDouble(transfer_amount_field.getText());
+                BigDecimal amount = new BigDecimal(transfer_amount_field.getText());
 
                 bank_service.transfer_by_account_number(source_number, target_number, amount);
 
@@ -253,6 +258,8 @@ public class MainFrame extends JFrame {
                 save_data();
 
                 JOptionPane.showMessageDialog(this, "Transfer completed.");
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Amount must be a number.");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, e.getMessage());
             }

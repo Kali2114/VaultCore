@@ -1,63 +1,63 @@
 package models;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import exceptions.InvalidAmountException;
 import exceptions.InsufficientFundsException;
 import utils.IdGenerator;
 
-public abstract class BankAccount implements Serializable{
+public abstract class BankAccount implements Serializable {
     private String account_number;
     private User owner;
-    private double balance;
+    private BigDecimal balance;
     private boolean is_active;
 
-    public BankAccount(User owner){
+    public BankAccount(User owner) {
         this.account_number = IdGenerator.generate_account_id();
         this.owner = owner;
-        this.balance = 0;
+        this.balance = BigDecimal.ZERO;
         this.is_active = true;
     }
 
-    public String get_account_number(){
+    public String get_account_number() {
         return this.account_number;
     }
 
-    public User get_owner(){
+    public User get_owner() {
         return this.owner;
     }
 
-    public double get_balance(){
+    public BigDecimal get_balance() {
         return this.balance;
     }
 
-    public boolean get_is_active(){
+    public boolean get_is_active() {
         return this.is_active;
     }
 
-    public void deposit(double value){
-        if (value <= 0){
+    public void deposit(BigDecimal value) {
+        if (value.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("Amount must be greater than zero");
         }
-        this.balance += value;
+
+        this.balance = this.balance.add(value);
     }
 
-    public void withdraw(double value){
-        if (value <= 0){
+    public void withdraw(BigDecimal value) {
+        if (value.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("Amount must be greater than zero");
-        }
-        else if (value > this.balance){
+        } else if (value.compareTo(this.balance) > 0) {
             throw new InsufficientFundsException("Not enough funds.");
         }
-        this.balance -= value;
+
+        this.balance = this.balance.subtract(value);
     }
 
-    public void transfer(BankAccount target_account, double amount){
+    public void transfer(BankAccount target_account, BigDecimal amount) {
         withdraw(amount);
         target_account.deposit(amount);
     }
 
     public abstract void monthly_update();
-
 }
-

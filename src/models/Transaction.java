@@ -1,15 +1,16 @@
 package models;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import utils.IdGenerator;
 
-public class Transaction implements Serializable{
+public class Transaction implements Serializable {
     private String transaction_id;
     private TransactionType type;
     private String source_account_number;
     private String target_account_number;
-    private double amount;
+    private BigDecimal amount;
     private LocalDateTime created_at;
     private String description;
 
@@ -17,9 +18,9 @@ public class Transaction implements Serializable{
             TransactionType type,
             String source_account_number,
             String target_account_number,
-            double amount,
+            BigDecimal amount,
             String description
-    ){
+    ) {
         this.transaction_id = IdGenerator.generate_id();
         this.type = type;
         this.source_account_number = source_account_number;
@@ -42,33 +43,31 @@ public class Transaction implements Serializable{
                 '}';
     }
 
-    public String get_transaction_id(){
+    public String get_transaction_id() {
         return this.transaction_id;
     }
 
-    public TransactionType get_type(){
+    public TransactionType get_type() {
         return this.type;
     }
 
-    public String get_source_account_number(){
+    public String get_source_account_number() {
         return this.source_account_number;
     }
 
-    public String get_target_account_number(){
+    public String get_target_account_number() {
         return this.target_account_number;
     }
 
-    public double get_amount(){
+    public BigDecimal get_amount() {
         return this.amount;
     }
 
-    public LocalDateTime get_created_at(){
+    public LocalDateTime get_created_at() {
         return this.created_at;
     }
 
-    public String get_description(){
+    public String get_description() {
         return this.description;
     }
 }
-
-
