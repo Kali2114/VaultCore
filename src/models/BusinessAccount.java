@@ -20,7 +20,7 @@ public class BusinessAccount extends BankAccount implements MonthlyFee {
     @Override
     public void apply_interest() {
         if (get_balance().compareTo(new BigDecimal("5000")) < 0) {
-            withdraw(new BigDecimal("500"));
+            super.withdraw(new BigDecimal("500"));
         }
     }
 
