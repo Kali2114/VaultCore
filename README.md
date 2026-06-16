@@ -41,81 +41,27 @@ Celem projektu było zaprojektowanie i zaimplementowanie systemu bankowego w ję
 
 ---
 
-## 🧠 Diagram klas (UML)
-
-```
-User
- ├── id
- ├── first_name
- ├── last_name
- ├── email
- └── accounts
-
-BankAccount (abstract)
- ├── account_number
- ├── owner
- ├── balance
- ├── is_active
- ├── deposit()
- ├── withdraw()
- ├── transfer()
- └── monthly_update()
-
-    ↑
-    ├── CheckingAccount
-    ├── SavingAccount
-    └── BusinessAccount
-
-Transaction
- ├── type
- ├── source_account
- ├── target_account
- ├── amount
- └── description
-
-BankService
- ├── users
- ├── accounts
- ├── transactions
- ├── create_user()
- ├── add_account()
- ├── deposit()
- ├── withdraw()
- ├── transfer()
- └── monthly_update()
-
-BankData
- ├── users
- ├── accounts
- └── transactions
-
-FileStorage
- ├── save()
- └── load()
-```
-
----
-
 ## 🖥️ Instrukcja użytkownika
 
 1. Uruchom aplikację (`Main.java`).
-2. W zakładce **Clients**:
+2. 2. Zaloguj się poprawnymi danymi.
+4. W zakładce **Clients**:
     - wprowadź dane użytkownika,
     - kliknij **Add user**.
-3. W zakładce **Accounts**:
+5. W zakładce **Accounts**:
     - wybierz użytkownika,
     - wybierz typ konta,
     - (opcjonalnie) ustaw oprocentowanie,
     - kliknij **Create account**.
-4. W zakładce **Operations**:
+6. W zakładce **Operations**:
     - wykonuj operacje:
         - wpłata,
         - wypłata,
         - przelew,
         - aktualizacja miesięczna.
-5. W zakładce **Transactions**:
+7. W zakładce **Transactions**:
     - przeglądaj historię operacji.
-6. Dane zapisywane są automatycznie po każdej operacji.
+8. Dane zapisywane są automatycznie po każdej operacji.
 
 ---
 
